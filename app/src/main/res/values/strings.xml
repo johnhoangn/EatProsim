@@ -2,4 +2,13 @@
     <string name="app_name">EatProsim</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="sortLabel">Sort By</string>
+    <string name="filterLabel">Filter By</string>
+
+    <string name="sortByName">Name</string>
+    <string name="sortByRating">Rating</string>
+
+    <!-- FILTERS TBD -->
+
 </resources>
