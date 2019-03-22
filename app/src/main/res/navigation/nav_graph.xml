@@ -5,5 +5,9 @@
             app:startDestination="@id/homeFragment">
 
     <fragment android:id="@+id/homeFragment" android:name="com.example.eatprosim.HomeFragment"
-              android:label="fragment_home" tools:layout="@layout/fragment_home"/>
+              android:label="fragment_home" tools:layout="@layout/fragment_home">
+        <action android:id="@+id/action_homeFragment_to_detailFragment" app:destination="@id/detailFragment"/>
+    </fragment>
+    <fragment android:id="@+id/detailFragment" android:name="com.example.eatprosim.DetailFragment"
+              android:label="fragment_detail" tools:layout="@layout/fragment_detail"/>
 </navigation>
