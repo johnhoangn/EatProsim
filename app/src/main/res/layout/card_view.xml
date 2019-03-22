@@ -18,14 +18,14 @@
                 android:text="."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/title" app:layout_constraintStart_toEndOf="@+id/poster"
+                android:id="@+id/nameView" app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintTop_toTopOf="parent"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
         <TextView
                 android:text="."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rating" app:layout_constraintStart_toEndOf="@+id/poster"
+                android:id="@+id/ratingView" app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

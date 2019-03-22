@@ -13,6 +13,7 @@ class SharedModel : ViewModel() {
     private val debugging = true
 
     init {
+        restaurants = MutableLiveData()
         if ( debugging ) {
             restaurants.value = ArrayList(
                 listOf(
