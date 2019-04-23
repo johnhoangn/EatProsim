@@ -22,7 +22,7 @@ class DetailFragment : Fragment() {
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
 
         nameView.text = arguments?.getString("name")
-        ratingView.text = "%d/5".format(arguments?.getString("rating"))
+        ratingView.text = "%d/5".format(arguments?.getInt("rating"))
         phoneView.text = arguments?.getString("phone")
 
         return v

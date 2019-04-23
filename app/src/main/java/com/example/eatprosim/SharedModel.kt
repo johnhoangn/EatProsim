@@ -5,15 +5,19 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.findNavController
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class SharedModel : ViewModel() {
 
-    lateinit var restaurants : MutableLiveData<ArrayList<Restaurant>>
+    var database : DatabaseReference = FirebaseDatabase.getInstance().reference
+    var restaurants : MutableLiveData<ArrayList<Restaurant>> = MutableLiveData()
 
     private val debugging = true
 
     init {
-        restaurants = MutableLiveData()
+        database = FirebaseDatabase.getInstance().reference
+        database.child("Test").setValue("Hello, world!")
         if ( debugging ) {
             restaurants.value = ArrayList(
                 listOf(

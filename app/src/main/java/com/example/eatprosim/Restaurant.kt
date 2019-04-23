@@ -9,6 +9,6 @@ package com.example.eatprosim
  */
 class Restaurant(val name : String,
                  val rating : Int,
-                 val menu : ArrayList<FoodItem>?,
+                 val menu : ArrayList<FoodItem>? = null,
                  val phone : String,
                  val summary : String?)

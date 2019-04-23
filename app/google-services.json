@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "889500367432",
+    "firebase_url": "https://eat-prosim.firebaseio.com",
+    "project_id": "eat-prosim",
+    "storage_bucket": "eat-prosim.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889500367432:android:a1ecf0a1a15431aa",
+        "android_client_info": {
+          "package_name": "com.example.eatprosim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889500367432-r97oclmfq04n9vbp2ts4o3gqggn9tq4j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw2hO1XFQpppfEGsj-BKhaAWrqMh51P4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889500367432-r97oclmfq04n9vbp2ts4o3gqggn9tq4j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
