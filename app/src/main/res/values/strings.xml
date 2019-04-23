@@ -3,12 +3,19 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="sortLabel">Sort By</string>
-    <string name="filterLabel">Filter By</string>
+    <string name="sortLabel">Sort By:</string>
+    <string name="filterLabel">Filter By:</string>
 
-    <string name="sortByName">Name</string>
-    <string name="sortByRating">Rating</string>
+    <string-array name ="sortArray">
+        <item>Name</item>
+        <item>Rating</item>
+        <item>Distance</item>
+    </string-array>
 
+    <string-array name ="filterArray">
+        <item>On Campus</item>
+        <item>Off Campus</item>
+    </string-array>
     <!-- FILTERS TBD -->
 
 </resources>
