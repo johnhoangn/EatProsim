@@ -1,14 +1,10 @@
 package com.example.eatprosim
 
-/**
- * @param name
- * @param rating
- * @param menu
- * @param phone
- * @param summary
- */
-class Restaurant(val name : String,
-                 val rating : Int,
-                 val menu : ArrayList<FoodItem>? = null,
-                 val phone : String,
-                 val summary : String?)
+import com.google.firebase.database.IgnoreExtraProperties
+
+@IgnoreExtraProperties
+data class Restaurant(var name : String? = null,
+                 var rating : Int? = null,
+                 var site : String? = null,
+                 var phone : String? = null,
+                 var summary : String? = null)

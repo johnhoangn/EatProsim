@@ -49,8 +49,11 @@ dependencies {
 
     //recycler
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+
+    // location
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 
+    // firebase RTD
     implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.google.firebase:firebase-database:16.1.0'
 }
