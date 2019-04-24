@@ -26,7 +26,8 @@
             android:layout_marginStart="15dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="15dp"
             app:layout_constraintTop_toBottomOf="@+id/sortView"
-            android:layout_marginTop="5dp" app:layout_constraintStart_toStartOf="parent"/>
+            android:layout_marginTop="5dp" app:layout_constraintStart_toStartOf="parent"
+            android:entries="@array/sortArray"/>
     <Spinner
             android:layout_width="0dp"
             android:layout_height="18dp"
@@ -34,7 +35,8 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="15dp" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="15dp"
-            app:layout_constraintTop_toBottomOf="@+id/filterView" android:layout_marginTop="5dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/filterView" android:layout_marginTop="5dp"
+            android:entries="@array/filterArray"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
