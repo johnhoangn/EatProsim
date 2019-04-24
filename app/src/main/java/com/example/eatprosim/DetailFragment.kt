@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.TextView
 
 class DetailFragment : Fragment() {
@@ -17,13 +18,14 @@ class DetailFragment : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_detail, container, false)
         val nameView = v.findViewById<TextView>(R.id.nameView)
-        // val statusView = v.findViewById<TextView>(R.id.statusView)
+        val webView = v.findViewById<WebView>(R.id.siteView)
         val ratingView = v.findViewById<TextView>(R.id.ratingView)
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
 
         nameView.text = arguments?.getString("name")
         ratingView.text = "%d/5".format(arguments?.getInt("rating"))
         phoneView.text = arguments?.getString("phone")
+        webView.loadUrl(arguments?.getString("url"))
 
         return v
     }

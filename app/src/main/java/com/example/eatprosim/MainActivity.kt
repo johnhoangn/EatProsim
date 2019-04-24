@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.database.*
 
+@SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity(), LocationListener {
 
     private val provider = LocationManager.NETWORK_PROVIDER
@@ -20,7 +21,10 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private lateinit var model : SharedModel
 
     // Location listener code
-    override fun onLocationChanged(location: Location?) {}
+    override fun onLocationChanged(location: Location?) {
+        val spot = locationManager.getLastKnownLocation(provider)
+        Log.wtf("Location Update!", "%.4f, %.4f".format(spot.latitude, spot.latitude))
+    }
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
     override fun onProviderEnabled(provider: String?) {}
     override fun onProviderDisabled(provider: String?) {}
@@ -40,21 +44,22 @@ class MainActivity : AppCompatActivity(), LocationListener {
         downloadRestaurants()
     }
 
-    fun downloadRestaurants() {
-        val newList = ArrayList<Restaurant>()
-
-        database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {}
-            override fun onDataChange(snap: DataSnapshot) {
-                val restaurant = snap.getValue(Restaurant::class.java)
-                restaurant?.also {
-                    Log.wtf("GOT", it.name)
-                    newList.add(it)
+    private fun downloadRestaurants() {
+        for (name in model.supportedRestaurants) {
+            database.child("restaurants").child(name).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {}
+                override fun onDataChange(snap: DataSnapshot) {
+                    val restaurant = snap.getValue(Restaurant::class.java)
+                    restaurant?.also {
+                        Log.wtf("GOT", it.name)
+                        model.restaurants.value?.also { list ->
+                            list.add(restaurant)
+                            model.restaurants.postValue(list)
+                        }
+                    }
                 }
-            }
-        })
-
-        model.restaurants.postValue(newList)
+            })
+        }
     }
 
     override fun onDestroy() {

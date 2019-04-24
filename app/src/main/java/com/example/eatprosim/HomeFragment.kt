@@ -2,37 +2,40 @@ package com.example.eatprosim
 
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.os.bundleOf
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
+    private lateinit var sortBy : Spinner
+    private lateinit var filterBy : Spinner
+    private lateinit var model : SharedModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_home, container, false)
-        val sortBy = v.findViewById<Spinner>(R.id.sortSpinner)
-        val filterBy = v.findViewById<Spinner>(R.id.filterSpinner)
 
-        // val search
-        val restaurantList = v.findViewById<RecyclerView>(R.id.restaurantList)
-        val model = activity?.run {
+        model = activity?.run {
             ViewModelProviders.of(this).get(SharedModel::class.java)
         } ?: throw Exception("Invalid Activity")
+
+        val restaurantList = v.findViewById<RecyclerView>(R.id.restaurantList)
         val adapter = RestaurantAdapter(model.restaurants.value)
+
+        sortBy = v.findViewById(R.id.sortSpinner)
+        filterBy = v.findViewById(R.id.filterSpinner)
 
         restaurantList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         restaurantList.adapter = adapter
@@ -41,6 +44,8 @@ class HomeFragment : Fragment() {
             adapter.setData(it)
             adapter.notifyDataSetChanged()
         })
+
+        sortBy.onItemSelectedListener = this
 
         return v
     }
@@ -67,14 +72,14 @@ class HomeFragment : Fragment() {
                 val ratingView: TextView = holder.view.findViewById(R.id.ratingView)
 
                 nameView.text = restaurant.name
-                ratingView.text = "%d/5".format(restaurant.rating)
+                ratingView.text = "%.1f/5".format(restaurant.rating)
 
                 holder.itemView.setOnClickListener {
                     findNavController(this@HomeFragment).navigate(
                         R.id.action_homeFragment_to_detailFragment,
                         bundleOf(
                             "name" to restaurant.name, "rating" to restaurant.rating,
-                            "phone" to restaurant.phone
+                            "phone" to restaurant.phone, "url" to restaurant.site
                         )
                     )
                 }
@@ -85,6 +90,18 @@ class HomeFragment : Fragment() {
 
         override fun getItemCount() : Int {
             return myDataset?.size ?: 0
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        when (parent) {
+            sortBy -> {
+                model.setSort(position)
+            }
+            filterBy -> {
+                model.setFilter(position)
+            }
         }
     }
 }
