@@ -42,21 +42,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun downloadRestaurants() {
-        for (name in model.supportedRestaurants) {
-            database.child("restaurants").child(name).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {}
-                override fun onDataChange(snap: DataSnapshot) {
-                    val restaurant = snap.getValue(Restaurant::class.java)
-                    restaurant?.also {
-                        Log.wtf("GOT", it.name)
-                        model.restaurants.value?.also { list ->
-                            list.add(restaurant)
-                            model.restaurants.postValue(list)
-                        }
-                    }
+        database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onDataChange(snap: DataSnapshot) {
+                val menu : MutableList<Restaurant> = mutableListOf()
+                snap.children.mapNotNullTo(menu) {
+                    it.getValue<Restaurant>(Restaurant::class.java)
                 }
-            })
-        }
+                for (restaurant : Restaurant in menu) {
+                    model.restaurants.value?.also { list ->
+                        list.add(restaurant)
+                    }
+                    model.restaurants.postValue(model.restaurants.value)
+                }
+            }
+        })
     }
 
     override fun onResume() {
