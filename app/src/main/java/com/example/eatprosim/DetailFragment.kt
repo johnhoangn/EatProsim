@@ -36,7 +36,7 @@ class DetailFragment : Fragment() {
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
         val imgView = v.findViewById<ImageView>(R.id.picView)
 //        val descView = v.findViewById<TextView>(R.id.descriptionView)
-//        val linkView = v.findViewById<>(R.id.linkView)
+        val linkView = v.findViewById<TextView>(R.id.linkView)
         val commentButton = v.findViewById<Button>(R.id.commentButton)
 
         model = activity?.run {
@@ -46,12 +46,14 @@ class DetailFragment : Fragment() {
         nameView.text = arguments?.getString("name")
         ratingView.text = "%.1f/5".format(arguments?.getDouble("rating"))
         phoneView.text = arguments?.getString("phone")
+        linkView.text = arguments?.getString("url")
 
-        Glide.with(context)
+        Glide.with(context!!)
             .load(arguments!!.getString("imageURL") ?: "")
             .apply(RequestOptions().override(200, 200))
             .into(imgView)
 
+        // comments
         commentButton.setOnClickListener {
             arguments?.also {args ->
                 NavHostFragment.findNavController(this@DetailFragment).navigate(

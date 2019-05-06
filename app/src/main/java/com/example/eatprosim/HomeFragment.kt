@@ -83,7 +83,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 val ratingView: TextView = holder.view.findViewById(R.id.ratingView)
                 val imgView: ImageView = holder.view.findViewById(R.id.imageView)
 
-                Glide.with(context)
+                Glide.with(context!!)
                     .load(restaurant.imageURL)
                     .apply(RequestOptions().override(200, 200))
                     .into(imgView)
