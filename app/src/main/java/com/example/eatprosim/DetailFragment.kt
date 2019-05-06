@@ -23,7 +23,7 @@ class DetailFragment : Fragment() {
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
 
         nameView.text = arguments?.getString("name")
-        ratingView.text = "%d/5".format(arguments?.getInt("rating"))
+        ratingView.text = "%.1f/5".format(arguments?.getFloat("rating"))
         phoneView.text = arguments?.getString("phone")
         webView.loadUrl(arguments?.getString("url"))
 
