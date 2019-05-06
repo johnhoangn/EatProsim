@@ -18,14 +18,12 @@ class DetailFragment : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_detail, container, false)
         val nameView = v.findViewById<TextView>(R.id.nameView)
-        val webView = v.findViewById<WebView>(R.id.siteView)
         val ratingView = v.findViewById<TextView>(R.id.ratingView)
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
 
         nameView.text = arguments?.getString("name")
         ratingView.text = "%.1f/5".format(arguments?.getFloat("rating"))
         phoneView.text = arguments?.getString("phone")
-        webView.loadUrl(arguments?.getString("url"))
 
         return v
     }

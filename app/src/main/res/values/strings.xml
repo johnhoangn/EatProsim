@@ -5,6 +5,9 @@
 
     <string name="sortLabel">Sort By:</string>
     <string name="filterLabel">Filter By:</string>
+    <string name="linkText">Link To Yelp: </string>
+    <string name="commentsText">Comments:</string>
+    <string name="commentButtonText">Comment</string>
 
     <string-array name ="sortArray">
         <item>Name</item>
@@ -13,6 +16,7 @@
     </string-array>
 
     <string-array name ="filterArray">
+        <item>None</item>
         <item>On Campus</item>
         <item>Off Campus</item>
     </string-array>

@@ -1,11 +1,13 @@
 package com.example.eatprosim
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.os.bundleOf
@@ -20,6 +22,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var sortBy : Spinner
     private lateinit var filterBy : Spinner
+    private lateinit var search : SearchView
     private lateinit var model : SharedModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,6 +39,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         sortBy = v.findViewById(R.id.sortSpinner)
         filterBy = v.findViewById(R.id.filterSpinner)
+        search = v.findViewById(R.id.searchbar)
+
+        // set hint
+        search.queryHint = "Search for a restaurant!"
+        search.setBackgroundColor(Color.argb(45, 200, 200, 200))
 
         restaurantList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         restaurantList.adapter = adapter
