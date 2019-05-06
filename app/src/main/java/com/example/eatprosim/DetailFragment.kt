@@ -3,15 +3,14 @@ package com.example.eatprosim
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import androidx.recyclerview.widget.LinearLayoutManager
 
 class DetailFragment : Fragment() {
 
@@ -35,7 +35,10 @@ class DetailFragment : Fragment() {
         val ratingView = v.findViewById<TextView>(R.id.ratingView)
         val phoneView = v.findViewById<TextView>(R.id.phoneView)
         val imgView = v.findViewById<ImageView>(R.id.picView)
-//        val descView = v.findViewById<TextView>(R.id.descriptionView)
+        val commentList = v.findViewById<RecyclerView>(R.id.commentsRecycler)
+        val adapter = CommentAdapter()
+        val comments = arrayListOf<Comment>()
+        val descView = v.findViewById<TextView>(R.id.descriptionView)
         val linkView = v.findViewById<TextView>(R.id.linkView)
         val commentButton = v.findViewById<Button>(R.id.commentButton)
 
@@ -44,8 +47,9 @@ class DetailFragment : Fragment() {
         } ?: throw Exception("Invalid Activity")
 
         nameView.text = arguments?.getString("name")
-        ratingView.text = "%.1f/5".format(arguments?.getDouble("rating"))
-        phoneView.text = arguments?.getString("phone")
+        descView.text = arguments?.getString("summary")
+        ratingView.text = "Rating: %.1f/5".format(arguments?.getDouble("rating"))
+        phoneView.text = "Phone: " + arguments?.getString("phone")
         linkView.text = arguments?.getString("url")
 
         Glide.with(context!!)
@@ -65,26 +69,30 @@ class DetailFragment : Fragment() {
             }
         }
 
-        model.database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
+        commentList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        commentList.adapter = adapter
+
+        model.database.child("comments").child(arguments!!.getString("restaurantID")!!)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {}
             override fun onDataChange(snap: DataSnapshot) {
-                val menu : MutableList<Restaurant> = mutableListOf()
-                snap.children.mapNotNullTo(menu) {
-                    it.getValue<Restaurant>(Restaurant::class.java)
+                comments.clear()
+                val downloadedComments : MutableList<Comment> = mutableListOf()
+                snap.children.mapNotNullTo(downloadedComments) {
+                    it.getValue<Comment>(Comment::class.java)
                 }
-                for (restaurant : Restaurant in menu) {
-                    model.restaurants.value?.also { list ->
-                        list.add(restaurant)
-                    }
-                    model.restaurants.postValue(model.restaurants.value)
+                for (comment : Comment in downloadedComments) {
+                    comments.add(comment)
                 }
+                adapter.setData(comments)
+                adapter.notifyDataSetChanged()
             }
         })
 
         return v
     }
 
-    inner class CommentAdapter(private var myDataset: ArrayList<Comment>?) :
+    inner class CommentAdapter(private var myDataset: ArrayList<Comment>? = null) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
         internal fun setData(data : ArrayList<Comment>?) {

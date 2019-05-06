@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback : LocationCallback
     private lateinit var model : SharedModel
-    private lateinit var locationReceiver : BroadcastReceiver
 
     private var currentLocation : Location? = null
 
@@ -66,11 +65,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startLocationUpdates()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(locationReceiver)
     }
 
     @SuppressLint("MissingPermission")

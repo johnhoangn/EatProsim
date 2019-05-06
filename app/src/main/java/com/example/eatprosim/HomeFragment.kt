@@ -97,6 +97,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         bundleOf(
                             "name" to restaurant.name, "rating" to restaurant.rating,
                             "phone" to restaurant.phone, "url" to restaurant.site,
+                            "summary" to restaurant.summary,
                             "imageURL" to restaurant.imageURL, "restaurantID" to restaurant.placeid
                         )
                     )
