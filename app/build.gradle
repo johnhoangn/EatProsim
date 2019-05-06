@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'kotlin-kapt'
+
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
@@ -56,6 +58,11 @@ dependencies {
     // firebase RTD
     implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.google.firebase:firebase-database:16.1.0'
+
+
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
+    kapt 'com.github.bumptech.glide:compiler:4.4.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

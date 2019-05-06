@@ -9,5 +9,6 @@ data class Restaurant(
     var placeid : String? = null,
     var rating : Double = 0.0,
     var site : String? = null,
-    var summary : String? = null
+    var summary : String? = null,
+    var imageURL : String? = null
 )

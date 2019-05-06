@@ -2,29 +2,21 @@ package com.example.eatprosim
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class SharedModel : ViewModel() {
 
+    var database : DatabaseReference = FirebaseDatabase.getInstance().reference
+
     val sorts = arrayOf("name", "rating", "distance")
-    val filters = arrayOf("on campus", "off campus")
+    val filters = arrayOf("both", "on campus", "off campus")
     var sort = "name"
-    var filter = "campus"
+    var filter = "both"
 
     var restaurants : MutableLiveData<ArrayList<Restaurant>> = MutableLiveData<ArrayList<Restaurant>>().apply {
         value = ArrayList()
     }
-
-    var supportedRestaurants = arrayOf(
-        "bollos",
-        "carolLeeDonuts",
-        "chipotle",
-        "himalaynCurry",
-        "kungFuTea",
-        "nextDoorBakeShop",
-        "sugarMagnolia",
-        "sushiFactory",
-        "theCellar"
-    )
 
     fun setSort(sort : Int) {
         this.sort = sorts[sort]
@@ -33,17 +25,8 @@ class SharedModel : ViewModel() {
         this.filter = filters[filter]
     }
 
-    /*
-        "Sushi Factory",
-        "JPetal",
-        "Kung Fu Tea",
-        "Cafe Mekong",
-        "Spice City",
-        "Next Door Bake Shop",
-        "Himalayan Curry",
-        "Happy Wok",
-        "Souvlaki",
-        "The Cellar",
-        "Cafe Bangkok"
-     */
+    fun uploadComment(comment : Comment, restaurantID : String) {
+        database.child("comments").child(restaurantID)
+            .child(System.currentTimeMillis().toString()).setValue(comment)
+    }
 }

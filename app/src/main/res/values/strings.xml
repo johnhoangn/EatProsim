@@ -9,7 +9,7 @@
     <string name="commentsText">Comments:</string>
     <string name="commentButtonText">Comment</string>
 
-    <string-array name ="sortArray">
+    <string-array name="sortArray">
         <item>Name</item>
         <item>Rating</item>
         <item>Distance</item>

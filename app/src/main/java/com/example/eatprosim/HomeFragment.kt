@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.SearchView
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.os.bundleOf
@@ -17,6 +18,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -78,6 +81,12 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 val restaurant = it[position]
                 val nameView: TextView = holder.view.findViewById(R.id.nameView)
                 val ratingView: TextView = holder.view.findViewById(R.id.ratingView)
+                val imgView: ImageView = holder.view.findViewById(R.id.imageView)
+
+                Glide.with(context)
+                    .load(restaurant.imageURL)
+                    .apply(RequestOptions().override(200, 200))
+                    .into(imgView)
 
                 nameView.text = restaurant.name
                 ratingView.text = "%.1f/5".format(restaurant.rating)
@@ -87,7 +96,8 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         R.id.action_homeFragment_to_detailFragment,
                         bundleOf(
                             "name" to restaurant.name, "rating" to restaurant.rating,
-                            "phone" to restaurant.phone, "url" to restaurant.site
+                            "phone" to restaurant.phone, "url" to restaurant.site,
+                            "imageURL" to restaurant.imageURL, "restaurantID" to restaurant.placeid
                         )
                     )
                 }

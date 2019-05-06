@@ -1,22 +1,27 @@
 package com.example.eatprosim
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.*
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+
 
 @SuppressLint("MissingPermission")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback : LocationCallback
-    private lateinit var database : DatabaseReference
     private lateinit var model : SharedModel
+    private lateinit var locationReceiver : BroadcastReceiver
+
     private var currentLocation : Location? = null
+
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize
         model = ViewModelProviders.of(this).get(SharedModel::class.java)
-        database = FirebaseDatabase.getInstance().reference
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Store new locations as we get them
@@ -42,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun downloadRestaurants() {
-        database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
+        model.database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {}
             override fun onDataChange(snap: DataSnapshot) {
                 val menu : MutableList<Restaurant> = mutableListOf()
@@ -62,6 +66,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startLocationUpdates()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(locationReceiver)
     }
 
     @SuppressLint("MissingPermission")
