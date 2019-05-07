@@ -2,6 +2,7 @@ package com.example.eatprosim
 
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -51,10 +52,11 @@ class DetailFragment : Fragment() {
         ratingView.text = "Rating: %.1f/5".format(arguments?.getDouble("rating"))
         phoneView.text = "Phone: " + arguments?.getString("phone")
         linkView.text = arguments?.getString("url")
+        linkView.setLinkTextColor(Color.BLUE)
 
         Glide.with(context!!)
             .load(arguments!!.getString("imageURL") ?: "")
-            .apply(RequestOptions().override(200, 200))
+            .apply(RequestOptions().override(600, 600))
             .into(imgView)
 
         // comments
