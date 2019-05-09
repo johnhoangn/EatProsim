@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.*
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationCallback : LocationCallback
     private lateinit var model : SharedModel
 
-    private var currentLocation : Location? = null
+    var currentLocation : Location? = null
 
 
     @SuppressLint("MissingPermission")
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         // Store new locations as we get them
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
+                model.setLocation(locationResult!!.lastLocation) // set current location in view model
                 locationResult ?: return
                 for (location in locationResult.locations){
                     currentLocation = location
@@ -41,25 +43,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        downloadRestaurants()
-    }
-
-    private fun downloadRestaurants() {
-        model.database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {}
-            override fun onDataChange(snap: DataSnapshot) {
-                val menu : MutableList<Restaurant> = mutableListOf()
-                snap.children.mapNotNullTo(menu) {
-                    it.getValue<Restaurant>(Restaurant::class.java)
-                }
-                for (restaurant : Restaurant in menu) {
-                    model.restaurants.value?.also { list ->
-                        list.add(restaurant)
-                    }
-                    model.restaurants.postValue(model.restaurants.value)
-                }
-            }
-        })
+        model.downloadRestaurants()
     }
 
     override fun onResume() {

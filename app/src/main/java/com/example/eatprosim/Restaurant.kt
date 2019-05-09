@@ -10,5 +10,8 @@ data class Restaurant(
     var rating : Double = 0.0,
     var site : String? = null,
     var summary : String? = null,
-    var imageURL : String? = null
+    var imageURL : String? = null,
+    var campus : Boolean = false,
+    var latitude : Double ?= null,
+    var longitude : Double ?= null
 )

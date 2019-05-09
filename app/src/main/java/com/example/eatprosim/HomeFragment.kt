@@ -3,6 +3,7 @@ package com.example.eatprosim
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.transition.Transition
 
 class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -27,6 +29,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var filterBy : Spinner
     private lateinit var search : SearchView
     private lateinit var model : SharedModel
+    private lateinit var adapter : RestaurantAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -38,34 +41,59 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } ?: throw Exception("Invalid Activity")
 
         val restaurantList = v.findViewById<RecyclerView>(R.id.restaurantList)
-        val adapter = RestaurantAdapter(model.restaurants.value)
+        adapter = RestaurantAdapter(model.restaurants.value)
 
         sortBy = v.findViewById(R.id.sortSpinner)
         filterBy = v.findViewById(R.id.filterSpinner)
         search = v.findViewById(R.id.searchbar)
 
-        // set hint
+        // search bar formatting
         search.queryHint = "Search for a restaurant!"
         search.setBackgroundColor(Color.argb(45, 200, 200, 200))
 
+        // recycler view set up
         restaurantList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         restaurantList.adapter = adapter
 
+        // viewmodel observer
         model.restaurants.observe(this, Observer {
             adapter.setData(it)
             adapter.notifyDataSetChanged()
         })
 
+        // listeners
         sortBy.onItemSelectedListener = this
+        filterBy.onItemSelectedListener = this
+
+        // change restaurant list as letters are being pressed that match names
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(text: String?): Boolean {
+                model.reDownload() // reload complete restaurants list for filtering
+                model.restaurants.postValue(model.filterByContains(text!!) as ArrayList<Restaurant>)
+                adapter.notifyDataSetChanged()
+                return true
+            }
+        }
+
+        )
 
         return v
     }
 
+    /**
+     * Adapter class for recycler view of restaurants
+     */
     inner class RestaurantAdapter(private var myDataset: ArrayList<Restaurant>?) :
         RecyclerView.Adapter<RestaurantAdapter.ViewHolder>() {
 
         internal fun setData(data : ArrayList<Restaurant>?) {
             myDataset = data
+            model.sort()
+            adapter.notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantAdapter.ViewHolder {
@@ -112,15 +140,23 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    /**
+     * Set spinner choices when selected
+     */
     override fun onNothingSelected(parent: AdapterView<*>?) {}
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent) {
             sortBy -> {
                 model.setSort(position)
+                model.sort()
             }
             filterBy -> {
                 model.setFilter(position)
+                model.reDownload()
+                model.filter()
+                model.restaurants.postValue(model.filter() as ArrayList<Restaurant>)
             }
         }
+        adapter.notifyDataSetChanged()
     }
 }

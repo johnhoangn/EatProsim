@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -47,6 +45,7 @@ class DetailFragment : Fragment() {
             ViewModelProviders.of(this).get(SharedModel::class.java)
         } ?: throw Exception("Invalid Activity")
 
+        // gets restaurant information
         nameView.text = arguments?.getString("name")
         descView.text = arguments?.getString("summary")
         ratingView.text = "Rating: %.1f/5".format(arguments?.getDouble("rating"))
@@ -59,7 +58,7 @@ class DetailFragment : Fragment() {
             .apply(RequestOptions().override(600, 600))
             .into(imgView)
 
-        // comments
+        // comments set up
         commentButton.setOnClickListener {
             arguments?.also {args ->
                 NavHostFragment.findNavController(this@DetailFragment).navigate(
@@ -74,6 +73,7 @@ class DetailFragment : Fragment() {
         commentList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         commentList.adapter = adapter
 
+        // user addition of comments
         model.database.child("comments").child(arguments!!.getString("restaurantID")!!)
             .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {}
@@ -94,6 +94,9 @@ class DetailFragment : Fragment() {
         return v
     }
 
+    /**
+     * Adapter for comments recycler
+     */
     inner class CommentAdapter(private var myDataset: ArrayList<Comment>? = null) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
