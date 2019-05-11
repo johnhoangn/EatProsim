@@ -28,5 +28,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/ratingView" app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+        <TextView
+                android:text="."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/distanceView"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

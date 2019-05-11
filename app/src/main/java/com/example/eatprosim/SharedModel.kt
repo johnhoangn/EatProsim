@@ -15,7 +15,9 @@ class SharedModel : ViewModel() {
     val filters = arrayOf("None", "On Campus", "Off Campus")
     var sort = "Name"
     var filter = "None"
+    var filterString = ""
 
+    var source = ArrayList<Restaurant>()
     var restaurants : MutableLiveData<ArrayList<Restaurant>> = MutableLiveData<ArrayList<Restaurant>>().apply {
         value = ArrayList()
     }
@@ -24,7 +26,6 @@ class SharedModel : ViewModel() {
     fun setLocation(newLocation : Location) {
         currentLocation = newLocation
     }
-
 
     fun setSort(sort : Int) {
         this.sort = sorts[sort]
@@ -50,48 +51,51 @@ class SharedModel : ViewModel() {
                     it.getValue<Restaurant>(Restaurant::class.java)
                 }
                 for (restaurant : Restaurant in menu) {
-                        restaurants.value?.also { list ->
-                            list.add(restaurant)
-                        }
-                    restaurants.postValue(restaurants.value)
+                    restaurants.value?.also { list ->
+                        list.add(restaurant)
+                        source.add(restaurant)
+                    }
                 }
+                restaurants.value = filterByContains(filterString) as ArrayList<Restaurant>
+                filter()
+                sort()
             }
         })
     }
 
-    /**
-     * Function for redownloading removed restaurants.
-     */
-    fun reDownload() {
-        database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {}
-            override fun onDataChange(snap: DataSnapshot) {
-                val menu : MutableList<Restaurant> = mutableListOf()
-                snap.children.mapNotNullTo(menu) {
-                    it.getValue<Restaurant>(Restaurant::class.java)
-                }
-                for (restaurant : Restaurant in menu) {
-                    if (!restaurants.value!!.contains(restaurant)) { // Alice added so we don't have duplicates
-                        restaurants.value?.also { list ->
-                            list.add(restaurant)
-                        }
-                      //  restaurants.postValue(restaurants.value)
-                    }
-                }
-            }
-        })
-    }
+//    /**
+//     * Function for redownloading removed restaurants.
+//     */
+//    fun reDownload() {
+//        database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onCancelled(p0: DatabaseError) {}
+//            override fun onDataChange(snap: DataSnapshot) {
+//                val menu : MutableList<Restaurant> = mutableListOf()
+//                snap.children.mapNotNullTo(menu) {
+//                    it.getValue<Restaurant>(Restaurant::class.java)
+//                }
+//                for (restaurant : Restaurant in menu) {
+//                    if (!restaurants.value!!.contains(restaurant)) { // Alice added so we don't have duplicates
+//                        restaurants.value?.also { list ->
+//                            list.add(restaurant)
+//                        }
+//                    }
+//                }
+//                restaurants.postValue(restaurants.value)
+//            }
+//        })
+//    }
 
     /**
      * Filters search view for restaurants with names that contain test.
      */
     fun filterByContains(text: String) : List<Restaurant> {
-            return restaurants.value?.filter {
+            return source.filter {
             // only restaurants that contain text in their Name
             val restName = it.name!!.replace("\'", "")
             val inputText = text.replace("\'", "")
             restName.contains(inputText, true)
-        }!!
+        }
     }
 
     /**
@@ -112,12 +116,13 @@ class SharedModel : ViewModel() {
                     findDistance(it)
                 }
         }
+        restaurants.postValue(restaurants.value)
     }
 
     /**
      * Calculates distance from current location to restaurant
      */
-    private fun findDistance(restaurant : Restaurant) : Float {
+    fun findDistance(restaurant : Restaurant) : Float {
         val result : FloatArray = floatArrayOf(0F)
         Log.wtf("currLocation: ", currentLocation.toString())
         Location.distanceBetween(currentLocation!!.latitude, currentLocation!!.longitude,
@@ -129,17 +134,19 @@ class SharedModel : ViewModel() {
     /**
      * Filters based on value selected from spinner.
      */
-    fun filter() : List<Restaurant> {
+    fun filter() {
         when (filter) {
-            "On Campus" ->
-                return restaurants.value?.filter {
-                it.campus
-            }!!
-            "Off Campus" ->
-                return restaurants.value?.filter {
-                !(it.campus)
-            }!!
+            "On Campus" -> {
+                restaurants.value = source.filter {
+                    it.campus
+                } as ArrayList<Restaurant>
+            }
+            "Off Campus" -> {
+                restaurants.value = source.filter {
+                    !it.campus
+                } as ArrayList<Restaurant>
+            }
         }
-        return restaurants.value as List<Restaurant>
+        restaurants.postValue(filterByContains(filterString) as ArrayList<Restaurant>)
     }
 }

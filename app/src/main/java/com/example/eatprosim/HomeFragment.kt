@@ -1,7 +1,10 @@
 package com.example.eatprosim
 
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,9 +25,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    // hehe
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var sortBy : Spinner
     private lateinit var filterBy : Spinner
     private lateinit var search : SearchView
@@ -35,6 +42,8 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_home, container, false)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity as Activity)
 
         model = activity?.run {
             ViewModelProviders.of(this).get(SharedModel::class.java)
@@ -59,6 +68,7 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         model.restaurants.observe(this, Observer {
             adapter.setData(it)
             adapter.notifyDataSetChanged()
+            Log.wtf("WTF", "DATACHANGED")
         })
 
         // listeners
@@ -70,16 +80,12 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 return false
             }
-
-            override fun onQueryTextChange(text: String?): Boolean {
-                model.reDownload() // reload complete restaurants list for filtering
-                model.restaurants.postValue(model.filterByContains(text!!) as ArrayList<Restaurant>)
-                adapter.notifyDataSetChanged()
+            override fun onQueryTextChange(text: String): Boolean {
+                model.filterString = text
+                model.restaurants.postValue(model.filterByContains(text) as ArrayList<Restaurant>)
                 return true
             }
-        }
-
-        )
+        })
 
         return v
     }
@@ -92,8 +98,6 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         internal fun setData(data : ArrayList<Restaurant>?) {
             myDataset = data
-            model.sort()
-            adapter.notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantAdapter.ViewHolder {
@@ -104,12 +108,14 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             return ViewHolder(v)
         }
 
+        @SuppressLint("MissingPermission")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             myDataset?.also {
                 val restaurant = it[position]
                 val nameView: TextView = holder.view.findViewById(R.id.nameView)
                 val ratingView: TextView = holder.view.findViewById(R.id.ratingView)
                 val imgView: ImageView = holder.view.findViewById(R.id.imageView)
+                val distView: TextView = holder.view.findViewById(R.id.distanceView)
 
                 Glide.with(context!!)
                     .load(restaurant.imageURL)
@@ -118,6 +124,11 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 nameView.text = restaurant.name
                 ratingView.text = "%.1f/5".format(restaurant.rating)
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        model.setLocation(location!!)
+                        distView.text = "%.2fmi".format(model.findDistance(restaurant) * 0.000621371)
+                    }
 
                 holder.itemView.setOnClickListener {
                     findNavController(this@HomeFragment).navigate(
@@ -148,15 +159,14 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         when (parent) {
             sortBy -> {
                 model.setSort(position)
-                model.sort()
             }
             filterBy -> {
                 model.setFilter(position)
-                model.reDownload()
-                model.filter()
-                model.restaurants.postValue(model.filter() as ArrayList<Restaurant>)
             }
         }
+        model.filterByContains(model.filterString)
+        model.filter()
+        model.sort()
         adapter.notifyDataSetChanged()
     }
 }

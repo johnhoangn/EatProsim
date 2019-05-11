@@ -1,16 +1,12 @@
 package com.example.eatprosim
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.*
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 
 
 @SuppressLint("MissingPermission")
@@ -44,11 +40,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         model.downloadRestaurants()
+        Log.wtf("WTF", "CREATED")
     }
 
     override fun onResume() {
         super.onResume()
         startLocationUpdates()
+        Log.wtf("WTF", "RESUMED")
     }
 
     @SuppressLint("MissingPermission")
