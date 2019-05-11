@@ -11,8 +11,8 @@ class SharedModel : ViewModel() {
 
     var database : DatabaseReference = FirebaseDatabase.getInstance().reference
 
-    val sorts = arrayOf("Name", "Rating", "Distance")
-    val filters = arrayOf("None", "On Campus", "Off Campus")
+    private val sorts = arrayOf("Name", "Rating", "Distance")
+    private val filters = arrayOf("None", "On Campus", "Off Campus")
     var sort = "Name"
     var filter = "None"
     var filterString = ""
@@ -43,6 +43,8 @@ class SharedModel : ViewModel() {
      * Initial restaurant download.
      */
     fun downloadRestaurants() {
+        source.clear()
+        restaurants.value?.clear()
         database.child("restaurants").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {}
             override fun onDataChange(snap: DataSnapshot) {
@@ -56,7 +58,7 @@ class SharedModel : ViewModel() {
                         source.add(restaurant)
                     }
                 }
-                restaurants.value = filterByContains(filterString) as ArrayList<Restaurant>
+                //restaurants.value = filterByContains(filterString) as ArrayList<Restaurant>
                 filter()
                 sort()
             }
@@ -89,8 +91,8 @@ class SharedModel : ViewModel() {
     /**
      * Filters search view for restaurants with names that contain test.
      */
-    fun filterByContains(text: String) : List<Restaurant> {
-            return source.filter {
+    fun filterByContains(text: String, inputArray: ArrayList<Restaurant>) : List<Restaurant> {
+            return inputArray.filter {
             // only restaurants that contain text in their Name
             val restName = it.name!!.replace("\'", "")
             val inputText = text.replace("\'", "")
@@ -116,7 +118,7 @@ class SharedModel : ViewModel() {
                     findDistance(it)
                 }
         }
-        restaurants.postValue(restaurants.value)
+        restaurants.postValue(filterByContains(filterString, restaurants.value!!) as ArrayList<Restaurant>)
     }
 
     /**
@@ -124,10 +126,8 @@ class SharedModel : ViewModel() {
      */
     fun findDistance(restaurant : Restaurant) : Float {
         val result : FloatArray = floatArrayOf(0F)
-        Log.wtf("currLocation: ", currentLocation.toString())
         Location.distanceBetween(currentLocation!!.latitude, currentLocation!!.longitude,
             restaurant.latitude!!, restaurant.longitude!!, result)
-        Log.wtf("DISTANCE: ", result[0].toString())
         return result[0] // distance is stored in first index of float array
     }
 
@@ -136,6 +136,9 @@ class SharedModel : ViewModel() {
      */
     fun filter() {
         when (filter) {
+            "None" -> {
+                restaurants.value = source.toMutableList() as ArrayList<Restaurant>
+            }
             "On Campus" -> {
                 restaurants.value = source.filter {
                     it.campus
@@ -147,6 +150,5 @@ class SharedModel : ViewModel() {
                 } as ArrayList<Restaurant>
             }
         }
-        restaurants.postValue(filterByContains(filterString) as ArrayList<Restaurant>)
     }
 }

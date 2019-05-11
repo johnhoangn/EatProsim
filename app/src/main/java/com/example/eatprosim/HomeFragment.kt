@@ -68,7 +68,6 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
         model.restaurants.observe(this, Observer {
             adapter.setData(it)
             adapter.notifyDataSetChanged()
-            Log.wtf("WTF", "DATACHANGED")
         })
 
         // listeners
@@ -82,7 +81,8 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
             override fun onQueryTextChange(text: String): Boolean {
                 model.filterString = text
-                model.restaurants.postValue(model.filterByContains(text) as ArrayList<Restaurant>)
+                //filter()
+                model.restaurants.postValue(model.filterByContains(text, model.source) as ArrayList<Restaurant>)
                 return true
             }
         })
@@ -164,9 +164,8 @@ class HomeFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 model.setFilter(position)
             }
         }
-        model.filterByContains(model.filterString)
         model.filter()
+        //model.filterByContains(model.filterString)
         model.sort()
-        adapter.notifyDataSetChanged()
     }
 }

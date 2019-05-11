@@ -40,13 +40,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         model.downloadRestaurants()
-        Log.wtf("WTF", "CREATED")
     }
 
     override fun onResume() {
         super.onResume()
         startLocationUpdates()
-        Log.wtf("WTF", "RESUMED")
     }
 
     @SuppressLint("MissingPermission")
